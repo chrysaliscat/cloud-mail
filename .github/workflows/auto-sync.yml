@@ -1,0 +1,28 @@
+name: Auto Sync Fork
+
+on:
+  schedule:
+    # 每天北京时间早上 8:00 自动检查并同步
+    - cron: '0 0 * * *'
+  # 同时也保留随时在 Actions 页面手动点击触发的按钮
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync_latest_from_upstream:
+    name: Sync latest commits from upstream repo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+
+      - name: Sync upstream changes
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
+        with:
+          upstream_sync_repo: maillab/cloud-mail
+          upstream_sync_branch: main
+          target_sync_branch: main
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+          test_mode: false
